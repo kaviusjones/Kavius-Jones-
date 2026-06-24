@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kavius Jones — Content Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#1B1B1B;font-family:'Anton',sans-serif;color:#D6B884;}
+.dash{padding-bottom:2rem;}
+.header{padding:1.5rem 1.5rem 1rem;border-bottom:2px solid #D6B884;display:flex;align-items:flex-end;justify-content:space-between;}
+.header-title{font-size:30px;letter-spacing:2px;color:#D6B884;line-height:1;}
+.header-sub{font-size:12px;color:#888;font-family:sans-serif;font-weight:400;letter-spacing:1px;margin-top:4px;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:1rem 1.5rem;}
+.stat{background:#242424;border:0.5px solid #333;border-radius:8px;padding:10px;text-align:center;}
+.stat-num{font-size:20px;color:#D6B884;}
+.stat-label{font-size:10px;color:#666;font-family:sans-serif;font-weight:400;margin-top:2px;letter-spacing:0.5px;}
+.section{padding:1rem 1.5rem 0.25rem;}
+.section-title{font-size:11px;letter-spacing:3px;color:#D6B884;opacity:0.55;margin-bottom:0.6rem;font-family:sans-serif;font-weight:700;text-transform:uppercase;}
+.card{background:#242424;border:0.5px solid #333;border-radius:10px;padding:12px 14px;margin-bottom:8px;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.card-title{font-size:14px;color:#D6B884;letter-spacing:1px;}
+.badge{font-size:10px;font-family:sans-serif;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:0.5px;}
+.badge-urgent{background:#3a2a14;color:#D6B884;border:0.5px solid #D6B884;}
+.badge-ready{background:#143a20;color:#7ecfa0;border:0.5px solid #7ecfa0;}
+.badge-soon{background:#1a1a3a;color:#8eaee8;border:0.5px solid #8eaee8;}
+.task-list{display:flex;flex-direction:column;gap:5px;}
+.task{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:6px;cursor:pointer;user-select:none;transition:background 0.15s;}
+.task:hover{background:#2c2c2c;}
+.task.done{opacity:0.4;}
+.task.done .task-label{text-decoration:line-through;}
+.checkbox{width:16px;height:16px;border-radius:3px;border:1.5px solid #D6B884;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.15s;}
+.task.done .checkbox{background:#D6B884;}
+.checkmark{display:none;width:9px;height:9px;}
+.task.done .checkmark{display:block;}
+.task-label{font-family:sans-serif;font-weight:400;font-size:13px;color:#d0d0c8;}
+.task.done .task-label{color:#555;}
+.sub-label{font-size:11px;color:#888;font-family:sans-serif;margin-bottom:6px;margin-top:2px;font-style:italic;}
+.pipeline-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:0 1.5rem 0.5rem;}
+.pipe-col{background:#242424;border:0.5px solid #333;border-radius:10px;padding:10px;}
+.pipe-col-title{font-size:10px;letter-spacing:2px;color:#D6B884;font-family:sans-serif;font-weight:700;text-transform:uppercase;margin-bottom:8px;text-align:center;}
+.pipe-item{font-size:12px;font-family:sans-serif;color:#aaa;padding:5px 8px;background:#1B1B1B;border-radius:5px;margin-bottom:5px;cursor:pointer;user-select:none;transition:background 0.15s;}
+.pipe-item:hover{background:#2c2c2c;}
+.pipe-item.done{text-decoration:line-through;opacity:0.4;}
+.pipe-item.blank{color:#444;font-style:italic;cursor:default;}
+.divider{height:1px;background:#2a2a2a;margin:0.5rem 1.5rem;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.goals-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:0 1.5rem 0.25rem;}
+.goal-card{background:#242424;border:0.5px solid #333;border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;transition:border-color 0.15s;}
+.goal-card:hover{border-color:#D6B884;}
+.goal-card.done{opacity:0.4;}
+.goal-card.done .goal-label{text-decoration:line-through;}
+.goal-label{font-family:sans-serif;font-size:12px;color:#d0d0c8;font-weight:500;line-height:1.3;}
+.goal-card.done .goal-label{color:#555;}
+@media(max-width:600px){
+  .two-col{grid-template-columns:1fr;}
+  .goals-row{grid-template-columns:1fr 1fr;}
+  .pipeline-grid{grid-template-columns:1fr 1fr;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+<div class="dash">
+  <div class="header">
+    <div>
+      <div class="header-title">KAVIUS JONES</div>
+      <div class="header-sub">Content Dashboard · Memphis, TN</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:11px;color:#888;font-family:sans-serif;margin-bottom:4px;" id="prog-label">0 / 0 complete</div>
+      <div style="width:130px;height:5px;background:#333;border-radius:3px;overflow:hidden;">
+        <div id="prog-fill" style="height:100%;background:#D6B884;border-radius:3px;width:0%;transition:width 0.3s;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat"><div class="stat-num" id="s-done">0</div><div class="stat-label">Done</div></div>
+    <div class="stat"><div class="stat-num" id="s-left">0</div><div class="stat-label">Left</div></div>
+    <div class="stat"><div class="stat-num" id="s-pct">0%</div><div class="stat-label">Progress</div></div>
+    <div class="stat"><div class="stat-num" id="s-goals">0/5</div><div class="stat-label">Goals</div></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section"><div class="section-title">Weekly Goals</div></div>
+  <div class="goals-row" id="goals-row"></div>
+
+  <div class="divider"></div>
+
+  <div class="section">
+    <div class="section-title">This Week's Priorities</div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">BYI Content</span>
+          <span class="badge badge-urgent">Tuesday</span>
+        </div>
+        <div class="sub-label">1 short-form video · Brown Youth Initiative at Hattiloo</div>
+        <div class="task-list" id="list-byi"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Come to Church With Me</span>
+          <span class="badge badge-ready">Ready to Schedule</span>
+        </div>
+        <div class="sub-label">Upload times</div>
+        <div class="task-list" id="list-choir-times"></div>
+        <div class="sub-label" style="margin-top:8px;">Before uploading</div>
+        <div class="task-list" id="list-choir-before"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section">
+    <div class="section-title">Nashville Trip Content</div>
+    <div class="two-col">
+      <div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Travel Day</span><span class="badge badge-soon">Upcoming</span></div>
+          <div class="task-list" id="list-nash-travel"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Church Content</span></div>
+          <div class="task-list" id="list-nash-church"></div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Nashville Shots</span></div>
+          <div class="task-list" id="list-nash-shots"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Shot Rule</span></div>
+          <div class="sub-label">Every location gets:</div>
+          <div class="task-list" id="list-nash-rule"></div>
+          <div class="sub-label" style="margin-top:8px;">Content goals</div>
+          <div class="task-list" id="list-nash-goals"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section" style="padding-bottom:0.75rem;">
+    <div class="section-title">Video Pipeline</div>
+  </div>
+  <div class="pipeline-grid">
+    <div class="pipe-col"><div class="pipe-col-title">Ideas</div><div id="pipe-ideas"></div></div>
+    <div class="pipe-col"><div class="pipe-col-title">Filming</div><div id="pipe-filming"></div></div>
+    <div class="pipe-col"><div class="pipe-col-title">Editing</div><div id="pipe-editing"></div></div>
+    <div class="pipe-col"><div class="pipe-col-title">Scheduled</div><div id="pipe-scheduled"></div></div>
+    <div class="pipe-col"><div class="pipe-col-title">Posted</div><div id="pipe-posted"></div></div>
+  </div>
+  <div style="height:1rem;"></div>
+</div>
+
+<script>
+const DATA = {
+  byi:[
+    {id:'byi1',label:'Wake up and get ready'},
+    {id:'byi2',label:'Film getting in the car'},
+    {id:'byi3',label:'Film drive to Hattiloo'},
+    {id:'byi4',label:'Film Hattiloo exterior'},
+    {id:'byi5',label:'Film walking into building'},
+    {id:'byi6',label:'Film camera/equipment setup'},
+    {id:'byi7',label:'Film yourself creating content'},
+    {id:'byi8',label:'Record quick reflection clip'},
+    {id:'byi9',label:'Film lunch/afternoon activity'},
+    {id:'byi10',label:'Import footage'},
+    {id:'byi11',label:'Edit short'},
+    {id:'byi12',label:'Write caption'},
+    {id:'byi13',label:'Post video'},
+  ],
+  'choir-times':[
+    {id:'ct1',label:'YouTube Shorts — 4:30 PM CT'},
+    {id:'ct2',label:'Instagram Reels — 5:00 PM CT'},
+    {id:'ct3',label:'TikTok — 5:30 PM CT'},
+  ],
+  'choir-before':[
+    {id:'cb1',label:'Final watch-through'},
+    {id:'cb2',label:'Caption written'},
+    {id:'cb3',label:'Cover selected'},
+    {id:'cb4',label:'Hashtags added'},
+    {id:'cb5',label:'Schedule uploads'},
+  ],
+  'nash-travel':[
+    {id:'nt1',label:'Packing'},
+    {id:'nt2',label:'Leaving home'},
+    {id:'nt3',label:'Loading car'},
+    {id:'nt4',label:'Highway footage'},
+    {id:'nt5',label:'Arrival clip'},
+  ],
+  'nash-shots':[
+    {id:'ns1',label:'Skyline'},
+    {id:'ns2',label:'Street footage'},
+    {id:'ns3',label:'Walking shots'},
+    {id:'ns4',label:'Food'},
+    {id:'ns5',label:'Hotel/Airbnb'},
+    {id:'ns6',label:'Outfit shot'},
+    {id:'ns7',label:'Reflection clip'},
+  ],
+  'nash-church':[
+    {id:'nc1',label:'Exterior shot'},
+    {id:'nc2',label:'Walking in'},
+    {id:'nc3',label:'Worship clip (if allowed)'},
+    {id:'nc4',label:'Reflection after service'},
+  ],
+  'nash-rule':[
+    {id:'nr1',label:'1 Landscape establishing shot'},
+    {id:'nr2',label:'1 Landscape shot of me'},
+    {id:'nr3',label:'1 Portrait shot (if short-worthy)'},
+  ],
+  'nash-goals':[
+    {id:'ng1',label:'Nashville Short #1'},
+    {id:'ng2',label:'Nashville Short #2'},
+    {id:'ng3',label:'Nashville Short #3'},
+    {id:'ng4',label:'Nashville Vlog'},
+  ],
+};
+
+const GOALS = [
+  {id:'g1',label:'2 Shorts Posted'},
+  {id:'g2',label:'Nashville Trip Filmed'},
+  {id:'g3',label:'Choir Short Posted'},
+  {id:'g4',label:'Hattiloo Video Posted'},
+  {id:'g5',label:'1 Long-Form Vlog Started'},
+];
+
+const PIPELINE = {
+  ideas:[{id:'pi1',label:'Open slot',blank:true},{id:'pi2',label:'Open slot',blank:true},{id:'pi3',label:'Open slot',blank:true}],
+  filming:[{id:'pf1',label:'BYI Short'},{id:'pf2',label:'Nashville Content'}],
+  editing:[{id:'pe1',label:'Open slot',blank:true},{id:'pe2',label:'Open slot',blank:true}],
+  scheduled:[{id:'ps1',label:'Come to Church With Me'}],
+  posted:[{id:'pp1',label:'Open slot',blank:true}],
+};
+
+function getState(){try{const r=localStorage.getItem('kj_content2');return r?JSON.parse(r):{}}catch{return {};}}
+function saveState(s){try{localStorage.setItem('kj_content2',JSON.stringify(s));}catch{}}
+
+function allIds(){
+  const ids=[];
+  Object.values(DATA).forEach(arr=>arr.forEach(t=>ids.push(t.id)));
+  return ids;
+}
+
+function renderStats(){
+  const s=getState();
+  const ids=allIds();
+  const done=ids.filter(id=>s[id]).length;
+  const total=ids.length;
+  const pct=total?Math.round((done/total)*100):0;
+  const gdone=GOALS.filter(g=>s[g.id]).length;
+  document.getElementById('prog-label').textContent=done+' / '+total+' complete';
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('s-done').textContent=done;
+  document.getElementById('s-left').textContent=total-done;
+  document.getElementById('s-pct').textContent=pct+'%';
+  document.getElementById('s-goals').textContent=gdone+'/5';
+}
+
+function makeTask(task){
+  const s=getState();
+  const isDone=!!s[task.id];
+  const div=document.createElement('div');
+  div.className='task'+(isDone?' done':'');
+  div.innerHTML='<div class="checkbox"><svg class="checkmark" viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,1.5" stroke="#1B1B1B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="task-label">'+task.label+'</span>';
+  div.addEventListener('click',function(){var st=getState();st[task.id]=!st[task.id];saveState(st);render();});
+  return div;
+}
+
+function renderList(listId,tasks){
+  const el=document.getElementById('list-'+listId);
+  if(!el)return;
+  el.innerHTML='';
+  tasks.forEach(function(t){el.appendChild(makeTask(t));});
+}
+
+function renderGoals(){
+  const s=getState();
+  const el=document.getElementById('goals-row');
+  el.innerHTML='';
+  GOALS.forEach(function(g){
+    const isDone=!!s[g.id];
+    const div=document.createElement('div');
+    div.className='goal-card'+(isDone?' done':'');
+    div.innerHTML='<div class="checkbox" style="flex-shrink:0;"><svg class="checkmark" viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,1.5" stroke="#1B1B1B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="goal-label">'+g.label+'</span>';
+    div.addEventListener('click',function(){var st=getState();st[g.id]=!st[g.id];saveState(st);render();});
+    el.appendChild(div);
+  });
+}
+
+function renderPipeline(){
+  const s=getState();
+  Object.entries(PIPELINE).forEach(function(entry){
+    const col=entry[0],items=entry[1];
+    const el=document.getElementById('pipe-'+col);
+    if(!el)return;
+    el.innerHTML='';
+    items.forEach(function(item){
+      const div=document.createElement('div');
+      const isDone=!!s[item.id];
+      div.className='pipe-item'+(item.blank?' blank':'')+(isDone?' done':'');
+      div.textContent=item.label;
+      if(!item.blank){
+        div.addEventListener('click',function(){var st=getState();st[item.id]=!st[item.id];saveState(st);renderPipeline();});
+      }
+      el.appendChild(div);
+    });
+  });
+}
+
+function render(){
+  Object.keys(DATA).forEach(function(key){renderList(key,DATA[key]);});
+  renderGoals();
+  renderPipeline();
+  renderStats();
+}
+
+render();
+</script>
+</body>
+</html>
